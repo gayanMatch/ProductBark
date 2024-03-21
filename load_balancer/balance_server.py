@@ -7,7 +7,10 @@ import time
 import base64
 import uvicorn
 import os
+import os
+from google.cloud import storage
 
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "voice-npz.json"
 app = FastAPI()
 redis_url = os.environ.get("redis_url", 'redis://default:eb7199cbf0f54bf5bb084f7f1d594692@fly-bark-queries.upstash.io:6379')
 r_sub = redis.Redis.from_url(redis_url)
@@ -41,6 +44,15 @@ def get_prediction_stream(request_id):
             yield decoded_result
 
 
+def check_voice(voice):
+    client = storage.Client()
+
+    # Get the bucket
+    bucket = client.get_bucket('tts-voices-npz')
+    blob = bucket.blob(voice + ".npz")
+    return blob.exists()
+
+
 @app.post("/{call_id}/synthesize", response_class=StreamingResponse)
 async def predict(call_id: str, request: Request):
     request_id = str(uuid.uuid4())
@@ -48,6 +60,11 @@ async def predict(call_id: str, request: Request):
     text = data.pop("text")
     voice = data.pop("voice").replace('.npz', '')
     rate = data.pop("rate") if "rate" in data.keys() else 1.0
+    if not check_voice(voice):
+        def stream_results():
+            yield f"NO VOICE {voice}"
+
+        return StreamingResponse(stream_results(), status_code=400)
     r_pub.lpush(
         "ml_requests",
         json.dumps({"request_id": request_id, "text": text, "voice": voice, "rate": rate})
