@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for optimizedbark on 2024-03-21T15:52:56Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'optimizedbark'
+organization = 'air-297'
+primary_region = 'ord'
+
+[build]
+  image = 'registry.fly.io/optimizedbark:deployment-01HSGVEAG5VFAM5X6CRC243K82'
+
+[http_service]
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  size = 'a100-40gb'
+  memory = '16gb'
+  cpu_kind = 'performance'
+  gpu_kind = 'a100-pcie-40gb'
+  cpus = 2
+  gpus = 1
