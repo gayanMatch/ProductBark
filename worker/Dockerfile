@@ -35,4 +35,4 @@ RUN pip install nvidia-pyindex && \
     python3 -c "from vocos import Vocos;Vocos.from_pretrained('charactr/vocos-encodec-24khz')"
 EXPOSE 5000
 
-CMD ["python3", "worker.py"]
+CMD ["python3", "main.py"]
