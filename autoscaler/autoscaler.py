@@ -24,6 +24,10 @@ class Monitor(threading.Thread):
         while True:
             if i == 0:
                 num_gpu_machines = self.commands.get_machines_by_state(a='optimizedbark', state='started')
+                logging.info("#######################################################################")
+                logging.info(f"{num_gpu_machines}")
+                logging.info(f"{num_gpu_machines.split('\n')}")
+                logging.info("#######################################################################")
             if i >= 600:  # every 10 minutes
                 i = 0
             num_requests = self.redis_con.get('active_requests')
