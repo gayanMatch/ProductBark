@@ -23,14 +23,11 @@ class Monitor(threading.Thread):
         num_gpu_machines = 0
         while True:
             if i == 0:
-                num_gpu_machines = self.commands.get_machines_by_state(a='optimizedbark', state='started')
-                logging.info("#######################################################################")
-                logging.info(f"{num_gpu_machines}")
-                logging.info(f"{num_gpu_machines.split('\n')}")
-                logging.info("#######################################################################")
+                gpu_machines = self.commands.get_machines_by_state(a='optimizedbark', state='started')
+                num_gpu_machines = len(gpu_machines.strip().split('\n'))
             if i >= 600:  # every 10 minutes
                 i = 0
-            num_requests = self.redis_con.get('active_requests')
+            num_requests = int(self.redis_con.get('active_requests').decode('utf-8'))
             num_gpus = 3 * num_gpu_machines - num_requests
             self.num_gpu_log.append(num_gpus >= (GPU_NUM_THRESHOLD + 3))
             if len(self.num_gpu_log) > GPU_TIME_THRESHOLD:
