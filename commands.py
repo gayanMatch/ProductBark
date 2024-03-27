@@ -82,6 +82,16 @@ class Commands:
             f"echo \"{stopped_machine_ids}\" | awk 'NF' | head -n {count} | xargs -P 0 -L 1 -I {{id}} flyctl m destroy {{id}} -a {app_name} -t {self.token}"
         )
 
+    def stop_machine(self, *, a=None, machine_id=None):
+        app_name = a
+        if not app_name:
+            return print("App name is required -a")
+
+        if not machine_id:
+            return print("machine_id to stop is required --count")
+
+        c.run(f"flyctl m stop {machine_id} -a {app_name} -t {self.token}")
+
     def get_machines_by_state(self, *, a=None, state=None):
         """get machines from app by state"""
         app_name = a

@@ -20,6 +20,8 @@ r_sub = redis.Redis.from_url(redis_url)
 #   password=''  # Likely no password if you're just testing locally
 # )
 r_pub = redis.Redis.from_url(redis_url)
+r_pub.setnx('active_requests', 0)
+
 # r_pub = redis.Redis(
 #   host='localhost',  # Changed to localhost
 #   port=6379,
@@ -38,6 +40,7 @@ def get_prediction_stream(request_id):
             data = message['data']
             # Assuming the 'complete' signal is a message with '{"complete": true}'
             if b'complete' in data:
+                r_pub.decr('active_requests')
                 break
             encoded_result = json.loads(data)['prediction']
             decoded_result = base64.b64decode(encoded_result)
@@ -67,9 +70,17 @@ async def predict(call_id: str, request: Request):
         return StreamingResponse(stream_results(), status_code=400)
     r_pub.lpush(
         "ml_requests",
-        json.dumps({"request_id": request_id, "text": text, "voice": voice, "rate": rate})
+        json.dumps(
+            {
+                "request_id": request_id,
+                "text": text,
+                "voice": voice,
+                "rate": rate,
+                "request_time": time.time()
+            }
+        )
     )
-
+    r_pub.incr('active_requests')
     def event_stream():
         return get_prediction_stream(request_id)
 

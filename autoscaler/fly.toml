@@ -1,0 +1,20 @@
+# fly.toml app configuration file generated for tts-app on 2024-03-21T17:18:26Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'tts-scaler'
+primary_region = 'ord'
+
+[build]
+
+[service]
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  memory = '4gb'
+  cpu_kind = 'shared'
+  cpus = 2
