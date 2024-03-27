@@ -36,7 +36,7 @@ class Monitor(threading.Thread):
                     gpu_list = []
                     _, keys = self.redis_con.scan(match='migs_*')
                     for key in keys:
-                        val = self.redis_con.get(key.decode('utf-8'))
+                        val = int(self.redis_con.get(key.decode('utf-8')).decode('utf-8'))
                         gpu_list.append((val, key.decode('utf-8')))
                     gpu_list.sort()
                     max_val, max_key = gpu_list[0]
