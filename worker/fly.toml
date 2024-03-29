@@ -13,6 +13,7 @@ primary_region = 'ord'
 [env]
   DEFAULT_VOICE = "hey_james_reliable_1_small_coarse_fix"
   redis_url = "redis://default:eb7199cbf0f54bf5bb084f7f1d594692@fly-bark-queries.upstash.io:6379"
+  mongo_uri = "mongodb+srv://ginger:P%40ssw0rd131181@bark-log.1fit2mh.mongodb.net/?retryWrites=true&w=majority&appName=bark-log"
 
 [http_service]
   auto_stop_machines = false
