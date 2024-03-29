@@ -53,7 +53,6 @@ def get_prediction_stream(request_id):
             data = message['data']
             # Assuming the 'complete' signal is a message with '{"complete": true}'
             if b'complete' in data:
-                r_pub.decr('active_requests')
                 break
             encoded_result = json.loads(data)['prediction']
             decoded_result = base64.b64decode(encoded_result)
