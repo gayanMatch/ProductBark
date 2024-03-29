@@ -22,7 +22,7 @@ class Monitor(threading.Thread):
         self.num_gpu_machines = 0
 
     def add_log(self, num_gpu, action=None):
-        current_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f")
+        current_time = datetime.utcnow()
         self.mongo_collection.insert_one(
             {
                 "log_time": current_time,
