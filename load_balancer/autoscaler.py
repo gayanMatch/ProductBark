@@ -73,7 +73,7 @@ class Monitor(threading.Thread):
                     else:
                         self.redis_con.set('stop_marked_gpu', max_key[5:])
                 self.add_log(num_gpus, action=action)
-            # self.scale_up_if_needed()
+            self.scale_up_if_needed()
             # self.redis_con.lpush('available_gpus', json.dumps({'time': time.time(), 'num_gpus': num_gpus}))
             time.sleep(1)
             i += 1

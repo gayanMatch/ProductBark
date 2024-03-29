@@ -93,7 +93,7 @@ async def predict(call_id: str, request: Request):
         )
     )
     r_pub.incr('active_requests')
-    monitor.scale_up_if_needed()
+
     def event_stream():
         return get_prediction_stream(request_id)
 
