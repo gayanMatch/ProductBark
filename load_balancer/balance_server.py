@@ -32,6 +32,7 @@ r_sub = redis.Redis.from_url(redis_url)
 r_pub = redis.Redis.from_url(redis_url)
 r_monitor = redis.Redis.from_url(redis_url)
 monitor = Monitor(r_monitor, mongo_con=client)
+monitor.start()
 r_pub.setnx('active_requests', 0)
 
 # r_pub = redis.Redis(
