@@ -10,7 +10,7 @@ import os
 from datetime import datetime, timezone
 from google.cloud import storage
 from autoscaler import Monitor
-from pymongo import MongoClient
+# from pymongo import MongoClient
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "voice-npz.json"
 app = FastAPI()
@@ -18,11 +18,11 @@ redis_url = os.environ.get(
     "redis_url",
     'redis://default:eb7199cbf0f54bf5bb084f7f1d594692@fly-bark-queries.upstash.io:6379'
 )
-mongo_uri = os.environ.get(
-    "mongo_uri",
-    "mongodb+srv://ginger:P%40ssw0rd131181@bark-log.1fit2mh.mongodb.net/?retryWrites=true&w=majority&appName=bark-log"
-)
-client = MongoClient(mongo_uri)
+# mongo_uri = os.environ.get(
+#     "mongo_uri",
+#     "mongodb+srv://ginger:P%40ssw0rd131181@bark-log.1fit2mh.mongodb.net/?retryWrites=true&w=majority&appName=bark-log"
+# )
+# client = MongoClient(mongo_uri)
 r_sub = redis.Redis.from_url(redis_url)
 # r_sub = redis.Redis(
 #   host='localhost',  # Changed to localhost
@@ -31,7 +31,7 @@ r_sub = redis.Redis.from_url(redis_url)
 # )
 r_pub = redis.Redis.from_url(redis_url)
 r_monitor = redis.Redis.from_url(redis_url)
-monitor = Monitor(r_monitor, mongo_con=client)
+monitor = Monitor(r_monitor)
 monitor.start()
 r_pub.setnx('active_requests', 0)
 

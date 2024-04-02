@@ -12,24 +12,25 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 
 
 class Monitor(threading.Thread):
-    def __init__(self, redis_con, mongo_con):
+    def __init__(self, redis_con):
         super().__init__()
         self.commands = Commands()
         self.redis_con = redis_con
         self.redis_con.set('stop_marked_gpu', '')
-        self.mongo_collection = mongo_con['bark']['log']
+        # self.mongo_collection = mongo_con['bark']['log']
         self.num_gpu_log = []
         self.num_gpu_machines = 0
 
     def add_log(self, num_gpu, action=None):
-        current_time = datetime.utcnow()
-        self.mongo_collection.insert_one(
-            {
-                "log_time": current_time,
-                "num_gpus": num_gpu,
-                "action": action
-            }
-        )
+        current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")
+        logging.info(f'Log Time: {current_time}, Num GPUs: {num_gpu}, Action: {action}')
+        # self.mongo_collection.insert_one(
+        #     {
+        #         "log_time": current_time,
+        #         "num_gpus": num_gpu,
+        #         "action": action
+        #     }
+        # )
 
     def scale_up_if_needed(self):
         num_requests = int(self.redis_con.get('active_requests').decode('utf-8'))
@@ -78,7 +79,12 @@ class Monitor(threading.Thread):
                     else:
                         self.redis_con.set('stop_marked_gpu', max_key[5:])
                 self.add_log(num_gpus, action=action)
-            self.scale_up_if_needed()
+            if num_gpus < GPU_NUM_THRESHOLD:
+                # scale up
+                self.commands.start(a='optimizedbark', count=1)
+                logging.info(f"Starting machine")
+                self.num_gpu_machines += 1
+                self.add_log(num_gpus, action="started")
             # self.redis_con.lpush('available_gpus', json.dumps({'time': time.time(), 'num_gpus': num_gpus}))
             time.sleep(1)
             i += 1
