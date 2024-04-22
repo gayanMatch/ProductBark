@@ -67,7 +67,7 @@ class Monitor(threading.Thread):
                     for key in keys:
                         val = int(self.redis_con.get(key.decode('utf-8')).decode('utf-8'))
                         gpu_list.append((val, key.decode('utf-8')))
-                    gpu_list.sort()
+                    gpu_list.sort(reverse=True)
                     max_val, max_key = gpu_list[0]
                     if max_val == 3:
                         self.commands.stop_machine(a='optimizedbark', machine_id=max_key[5:])
